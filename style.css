@@ -15,14 +15,18 @@
 }
 
 body {
-    font-family: 'UOS Typeface', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'UOS Typeface', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     line-height: 1.6;
     color: var(--primary);
     background-color: var(--secondary);
     overflow-x: hidden;
 }
 
+/* Noto Sans Korean */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
 /* UOS Typeface */
+
 @font-face {
     font-family: 'UOS Typeface';
     src: url('fonts/UOSTypeface.otf') format('opentype'),
@@ -31,6 +35,7 @@ body {
     font-weight: normal;
     font-style: normal;
 }
+
 
 /* Navigation */
 .nav {
@@ -105,7 +110,11 @@ body {
     justify-content: center;
 }
 
+
 .typing-area {
+    /* ... */
+    font-family: 'UOS Typeface', 'Noto Sans KR', sans-serif;  
+    /* ... */
     width: 100%;
     min-height: 100%;
     background: transparent;

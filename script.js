@@ -83,26 +83,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Download button functionality
-    const downloadBtn = document.querySelector('.btn-download');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', function(e) {
-            // 폰트 파일이 준비되면 이 부분의 주석을 해제하고 경로를 수정하세요
-            /*
-            e.preventDefault();
-            const link = document.createElement('a');
-            link.href = 'fonts/UOSTypeface.otf';
-            link.download = 'UOSTypeface.otf';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            */
-            
-            // 폰트 파일이 없을 때
-            alert('서체 파일이 준비 중입니다.');
-            e.preventDefault();
-        });
-    }
+  // Download button functionality
+const downloadBtn = document.querySelector('.btn-download');
+if (downloadBtn) {
+    downloadBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        fetch('fonts/UOSTypeface.otf')
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'UOSTypeface.otf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                alert('폰트 파일을 찾을 수 없습니다.');
+            });
+    });
+}
+
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
@@ -110,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
             typingArea.textContent = '';
-            updateCircles();
+            
         }
         
         // Escape to blur
