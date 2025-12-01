@@ -25,9 +25,9 @@ body {
 /* UOS Typeface */
 @font-face {
     font-family: 'UOS Typeface';
-    src: url('../fonts/UOSTypeface.otf') format('opentype'),
-         url('../fonts/UOSTypeface.woff2') format('woff2'),
-         url('../fonts/UOSTypeface.woff') format('woff');
+    src: url('fonts/UOSTypeface.otf') format('opentype'),
+         url('fonts/UOSTypeface.woff2') format('woff2'),
+         url('fonts/UOSTypeface.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
@@ -48,7 +48,7 @@ body {
 }
 
 .nav-logo {
-    font-size: 30px;
+    font-size: 18px;
     font-weight: 900;
     color: var(--secondary);
     letter-spacing: 0.1em;
@@ -62,7 +62,7 @@ body {
 .nav-menu a {
     color: var(--secondary);
     text-decoration: none;
-    font-size: 24px;
+    font-size: 14px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -112,7 +112,7 @@ body {
     border: none;
     outline: none;
     color: var(--secondary);
-    font-size: clamp(60px, 12vw, 180px);
+    font-size: 120px;
     font-weight: 900;
     line-height: 1.1;
     padding: 40px;
@@ -120,7 +120,8 @@ body {
     overflow-wrap: break-word;
     font-family: 'UOS Typeface', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.25em;
+    letter-spacing: -0.02em;
     cursor: text;
     position: relative;
     z-index: 2;
@@ -188,7 +189,7 @@ body {
 }
 
 .section-heading {
-    font-size: clamp(48px, 8vw, 120px);
+    font-size: 80px;
     font-weight: 900;
     margin-bottom: 100px;
     text-transform: uppercase;
@@ -209,7 +210,7 @@ body {
 }
 
 .large-title {
-    font-size: clamp(60px, 10vw, 140px);
+    font-size: 100px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: -0.03em;
@@ -220,7 +221,7 @@ body {
 }
 
 .large-text {
-    font-size: clamp(24px, 3vw, 42px);
+    font-size: 32px;
     line-height: 1.4;
     margin-bottom: 40px;
     font-weight: 300;
@@ -237,7 +238,7 @@ body {
 }
 
 .intro-label {
-    font-size: clamp(20px, 2.5vw, 32px);
+    font-size: 28px;
     font-weight: 700;
     color: var(--uos-blue);
     margin-bottom: 30px;
@@ -283,13 +284,13 @@ body {
 }
 
 .concept-content h3 {
-    font-size: clamp(28px, 4vw, 48px);
+    font-size: 40px;
     font-weight: 700;
     margin-bottom: 20px;
 }
 
 .concept-content p {
-    font-size: clamp(16px, 2vw, 24px);
+    font-size: 20px;
     line-height: 1.6;
     opacity: 0.7;
 }
@@ -356,7 +357,7 @@ body {
 }
 
 .download-title {
-    font-size: clamp(48px, 8vw, 100px);
+    font-size: 70px;
     font-weight: 900;
     margin-bottom: 40px;
     text-transform: uppercase;
@@ -364,7 +365,7 @@ body {
 }
 
 .download-desc {
-    font-size: clamp(18px, 2vw, 28px);
+    font-size: 24px;
     margin-bottom: 60px;
     opacity: 0.9;
 }
