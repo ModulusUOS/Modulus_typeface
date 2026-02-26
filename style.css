@@ -128,7 +128,6 @@ body {
     word-wrap: break-word;
     overflow-wrap: break-word;
     font-family: 'UOS Typeface', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    text-transform: uppercase;
     letter-spacing: 0.08em;
   
     cursor: text;
