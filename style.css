@@ -28,9 +28,9 @@ body {
 /* UOS Typeface */
 @font-face {
     font-family: 'UOS Typeface';
-    src: url('fonts/UOSTypeface.woff2') format('woff2'),
-         url('fonts/UOSTypeface.woff') format('woff'),
-         url('fonts/UOSTypeface.otf') format('opentype');
+    src: url('font/UOSTypeface.woff2') format('woff2'),
+         url('font/UOSTypeface.woff') format('woff'),
+         url('font/UOSTypeface.otf') format('opentype');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -124,10 +124,10 @@ body {
     word-wrap: break-word;
     overflow-wrap: break-word;
 
-    /* 폰트 중복 선언 정리 (기능상 문제는 없지만 깔끔하게 1번만) */
+    /* 폰트 중복 선언 정리 */
     font-family: 'UOS Typeface', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-    /* ✅ 대문자 강제 제거 */
+    /* 대문자 강제 제거 */
     text-transform: none;
 
     letter-spacing: 0.08em;
