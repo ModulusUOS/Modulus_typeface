@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ✅ 다운로드 버튼 기능: JS로 가로채지 않음
+    // 다운로드 버튼 기능: JS로 가로채지 않음
     // HTML의 <a download> 기본 동작을 그대로 사용합니다.
 
     // Keyboard shortcuts
