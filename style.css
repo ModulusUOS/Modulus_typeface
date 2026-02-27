@@ -26,14 +26,14 @@ body {
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
 
 /* UOS Typeface */
-
 @font-face {
     font-family: 'UOS Typeface';
-    src: url('fonts/UOSTypeface.otf') format('opentype'),
-         url('fonts/UOSTypeface.woff2') format('woff2'),
-         url('fonts/UOSTypeface.woff') format('woff');
-    font-weight: normal;
+    src: url('fonts/UOSTypeface.woff2') format('woff2'),
+         url('fonts/UOSTypeface.woff') format('woff'),
+         url('fonts/UOSTypeface.otf') format('opentype');
+    font-weight: 400;
     font-style: normal;
+    font-display: swap;
 }
 
 
@@ -110,11 +110,7 @@ body {
     justify-content: center;
 }
 
-
 .typing-area {
-    /* ... */
-    font-family: 'UOS Typeface', 'Noto Sans KR', sans-serif;  
-    /* ... */
     width: 100%;
     min-height: 100%;
     background: transparent;
@@ -127,10 +123,14 @@ body {
     padding: 40px;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    font-family: 'UOS Typeface', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    text-transform: uppercase;
+
+    /* 폰트 중복 선언 정리 (기능상 문제는 없지만 깔끔하게 1번만) */
+    font-family: 'UOS Typeface', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* ✅ 대문자 강제 제거 */
+    text-transform: none;
+
     letter-spacing: 0.08em;
-  
     cursor: text;
     position: relative;
     z-index: 2;
@@ -339,21 +339,6 @@ body {
     object-fit: cover;
 }
 
-.gallery-item-large.placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--secondary);
-    border: 4px solid rgba(255, 255, 255, 0.3);
-}
-
-.gallery-item-large.placeholder span {
-    font-size: 32px;
-    font-weight: 900;
-    color: var(--uos-gray);
-    letter-spacing: 0.2em;
-}
-
 /* Download Section */
 .download-section {
     background: linear-gradient(135deg, var(--uos-blue) 0%, var(--uos-blue-light) 100%);
@@ -431,86 +416,34 @@ body {
 
 /* Responsive */
 @media (max-width: 1024px) {
-    .nav {
-        padding: 20px 40px;
-    }
-
-    .nav-menu {
-        gap: 20px;
-    }
-
-    .container-large {
-        padding: 0 40px;
-    }
-
-    .split-layout {
-        grid-template-columns: 1fr;
-        gap: 60px;
-    }
-
-    .large-title {
-        position: relative;
-        top: 0;
-    }
-
-    .concept-row {
-        grid-template-columns: 100px 1fr;
-        gap: 30px;
-    }
-
-    .gallery-masonry {
-        grid-template-columns: 1fr;
-    }
+    .nav { padding: 20px 40px; }
+    .nav-menu { gap: 20px; }
+    .container-large { padding: 0 40px; }
+    .split-layout { grid-template-columns: 1fr; gap: 60px; }
+    .large-title { position: relative; top: 0; }
+    .concept-row { grid-template-columns: 100px 1fr; gap: 30px; }
+    .gallery-masonry { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-    .nav {
-        padding: 20px;
-    }
-
-    .nav-menu {
-        display: none;
-    }
-
-    .container-large {
-        padding: 0 20px;
-    }
-
-    .section {
-        padding: 100px 0;
-    }
-
-    .typing-area {
-        padding: 20px;
-        font-size: 48px;
-    }
-
-    .concept-row {
-        grid-template-columns: 1fr;
-    }
-
-    .concept-number {
-        font-size: 48px;
-    }
-
-    .footer-content {
-        flex-direction: column;
-        gap: 40px;
-        align-items: flex-start;
-    }
+    .nav { padding: 20px; }
+    .nav-menu { display: none; }
+    .container-large { padding: 0 20px; }
+    .section { padding: 100px 0; }
+    .typing-area { padding: 20px; font-size: 48px; }
+    .concept-row { grid-template-columns: 1fr; }
+    .concept-number { font-size: 48px; }
+    .footer-content { flex-direction: column; gap: 40px; align-items: flex-start; }
 }
 
 /* Smooth Scroll */
-html {
-    scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 /* Selection */
 ::selection {
     background-color: var(--primary);
     color: var(--secondary);
 }
-
 ::-moz-selection {
     background-color: var(--primary);
     color: var(--secondary);
