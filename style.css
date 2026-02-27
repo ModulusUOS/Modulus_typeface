@@ -5,6 +5,7 @@
   box-sizing: border-box;
 }
 
+/* ✅ 모바일 가로 밀림 방지 */
 html,
 body {
   width: 100%;
@@ -39,6 +40,12 @@ body {
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+}
+
+/* ✅ 고정 nav가 섹션을 가리지 않게 앵커 스크롤 보정 */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 120px;
 }
 
 /* Navigation */
@@ -85,8 +92,8 @@ body {
 
 /* Main Typing Section */
 .main-section {
-  width: 100%;          /* ✅ 100vw 제거 */
-  min-height: 100svh;   /* ✅ 모바일 주소창 고려 */
+  width: 100%;        /* ✅ 100vw 제거 */
+  min-height: 100svh; /* ✅ 모바일 주소창 고려 */
   background-color: var(--uos-blue);
   position: relative;
   overflow: hidden;
@@ -126,7 +133,6 @@ body {
   line-height: 1.1;
   padding: 40px;
 
-  /* 줄바꿈 안정화 */
   word-break: break-word;
   overflow-wrap: anywhere;
 
@@ -387,6 +393,8 @@ body {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none;
   cursor: pointer;
+  max-width: 100%;
+  text-align: center;
 }
 
 .btn-download:hover {
@@ -436,9 +444,13 @@ body {
 }
 
 @media (max-width: 768px) {
+  /* ✅ 모바일 앵커 보정(nav 더 작음) */
+  html { scroll-padding-top: 80px; }
+
   .nav { padding: 20px; }
   .nav-menu { display: none; }
 
+  /* ✅ 모바일에서 로고가 커서 밀리는 것 방지 */
   .nav-logo {
     font-size: 18px;
     letter-spacing: 0.06em;
@@ -446,21 +458,44 @@ body {
 
   .container-large { padding: 0 20px; }
   .section { padding: 100px 0; }
-  .typing-area { padding: 20px; font-size: 48px; }
+
+  /* 메인 타이핑은 모바일 전용 크기 */
+  .typing-area {
+    padding: 20px;
+    font-size: 48px;
+  }
+
+  /* ✅ Download 섹션 “밀려서 안 보임” 방지: 패딩/폰트/버튼 축소 + 줄바꿈 */
+  .download-box {
+    padding: 80px 20px;
+  }
+  .download-title {
+    font-size: 36px;
+    line-height: 1.1;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    margin-bottom: 20px;
+  }
+  .download-desc {
+    font-size: 16px;
+    margin-bottom: 32px;
+  }
+  .btn-download {
+    padding: 18px 28px;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+  }
+
   .concept-row { grid-template-columns: 1fr; }
   .concept-number { font-size: 48px; }
   .footer-content { flex-direction: column; gap: 40px; align-items: flex-start; }
 }
-
-/* Smooth Scroll */
-html { scroll-behavior: smooth; }
 
 /* Selection */
 ::selection {
   background-color: var(--primary);
   color: var(--secondary);
 }
-
 ::-moz-selection {
   background-color: var(--primary);
   color: var(--secondary);
