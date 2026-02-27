@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     typingArea?.focus();
   }, 500);
 
-  // Smooth scroll for navigation
+  // Smooth scroll for navigation (CSS scroll-behavior + scroll-padding-top 지원)
   document.querySelectorAll('.nav-menu a').forEach((anchor) => {
     anchor.addEventListener('click', function (e) {
       e.preventDefault();
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-// Gallery lazy loading (현재 HTML에 data-src가 없어서 실질적으로는 영향 없음)
+// Gallery lazy loading (현재 HTML에 data-src 없으면 동작 안 함: 영향 없음)
 document.addEventListener('DOMContentLoaded', function () {
   const imgs = document.querySelectorAll('.gallery-item-large img[data-src]');
   if (!imgs.length) return;
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
   imgs.forEach((img) => imageObserver.observe(img));
 });
 
-// Cursor enhancement for main section (생성만 하고 이동은 안 함: 기존 동작 유지)
+// Cursor enhancement for main section (기존 동작 유지)
 document.addEventListener('DOMContentLoaded', function () {
   const mainSection = document.querySelector('.main-section');
   if (!mainSection) return;
