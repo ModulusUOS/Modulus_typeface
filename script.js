@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Focus on typing area on load
     setTimeout(() => {
-        typingArea.focus();
+        typingArea?.focus();
     }, 500);
 
     // Smooth scroll for navigation
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
         patternCanvas.width = window.innerWidth;
         patternCanvas.height = window.innerHeight;
         const patternCtx = patternCanvas.getContext('2d');
-        
+
         // Draw pattern
         function drawPattern() {
             patternCtx.fillStyle = '#fff';
@@ -38,11 +38,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const y = Math.random() * patternCanvas.height;
                 const width = Math.random() * 100 + 20;
                 const height = Math.random() * 200 + 50;
-                
                 patternCtx.fillRect(x, y, width, height);
             }
         }
-        
+
         drawPattern();
         patternBg.style.backgroundImage = `url(${patternCanvas.toDataURL()})`;
         patternBg.style.backgroundSize = 'cover';
@@ -77,49 +76,26 @@ document.addEventListener('DOMContentLoaded', function() {
         row.addEventListener('mouseenter', function() {
             this.style.transform = 'translateX(20px)';
         });
-        
+
         row.addEventListener('mouseleave', function() {
             this.style.transform = 'translateX(0)';
         });
     });
 
-  // Download button functionality
-const downloadBtn = document.querySelector('.btn-download');
-if (downloadBtn) {
-    downloadBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        fetch('fonts/UOSTypeface.otf')
-            .then(response => response.blob())
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'UOSTypeface.otf';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            })
-            .catch(error => {
-                alert('폰트 파일을 찾을 수 없습니다.');
-            });
-    });
-}
-
+    // ✅ 다운로드 버튼 기능: JS로 가로채지 않음
+    // HTML의 <a download> 기본 동작을 그대로 사용합니다.
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
         // Ctrl/Cmd + K to clear
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
-            typingArea.textContent = '';
-            
+            if (typingArea) typingArea.textContent = '';
         }
-        
+
         // Escape to blur
         if (e.key === 'Escape') {
-            typingArea.blur();
+            typingArea?.blur();
         }
     });
 
@@ -129,30 +105,21 @@ if (downloadBtn) {
         if (!ticking) {
             window.requestAnimationFrame(function() {
                 const scrolled = window.pageYOffset;
-                const mainHeight = mainSection.offsetHeight;
-                
-                if (scrolled < mainHeight) {
+                const mainHeight = mainSection?.offsetHeight ?? 0;
+
+                if (mainSection && scrolled < mainHeight && mainHeight > 0) {
                     const opacity = 1 - (scrolled / mainHeight) * 0.5;
                     mainSection.style.opacity = opacity;
                 }
-                
+
                 ticking = false;
             });
             ticking = true;
         }
     });
 
-    // Prevent typing area from losing contenteditable
-    typingArea.addEventListener('blur', function() {
-        setTimeout(() => {
-            if (document.activeElement !== typingArea) {
-                // Keep it editable
-            }
-        }, 100);
-    });
-
     // Handle paste events to keep text only
-    typingArea.addEventListener('paste', function(e) {
+    typingArea?.addEventListener('paste', function(e) {
         e.preventDefault();
         const text = (e.clipboardData || window.clipboardData).getData('text');
         document.execCommand('insertText', false, text);
@@ -186,8 +153,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // Cursor enhancement for main section
 document.addEventListener('DOMContentLoaded', function() {
     const mainSection = document.querySelector('.main-section');
-    
-    mainSection.addEventListener('mousemove', function(e) {
+    if (!mainSection) return;
+
+    mainSection.addEventListener('mousemove', function() {
         const cursor = document.querySelector('.custom-cursor');
         if (!cursor) {
             const cursorEl = document.createElement('div');
