@@ -19,6 +19,7 @@ body {
   --uos-blue-light: #0077C8; /* UOS Blue Light */
   --uos-emerald: #00B398; /* UOS Emerald */
   --uos-gray: #63666A; /* UOS Gray */
+  --nav-mobile-height: 72px;
 }
 
 body {
@@ -42,6 +43,26 @@ body {
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'UOS Typeface';
+  src: url('font/UOSTypeface.woff2') format('woff2'),
+       url('font/UOSTypeface.woff') format('woff'),
+       url('font/UOSTypeface.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'UOS Typeface';
+  src: url('font/UOSTypeface.woff2') format('woff2'),
+       url('font/UOSTypeface.woff') format('woff'),
+       url('font/UOSTypeface.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ✅ 고정 nav가 섹션을 가리지 않게 앵커 스크롤 보정 */
 html {
   scroll-behavior: smooth;
@@ -59,8 +80,11 @@ html {
   justify-content: space-between;
   align-items: center;
   padding: 30px 60px;
-  background: transparent;
-  mix-blend-mode: difference;
+  gap: 24px;
+  background: rgba(0, 64, 148, 0.28);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  mix-blend-mode: normal;
 }
 
 .nav-logo {
@@ -73,6 +97,39 @@ html {
 .nav-menu {
   display: flex;
   gap: 40px;
+}
+
+.nav-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav-toggle span {
+  width: 24px;
+  height: 2px;
+  background: var(--secondary);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav.nav-open .nav-toggle span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.nav.nav-open .nav-toggle span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav.nav-open .nav-toggle span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
 }
 
 .nav-menu a {
@@ -128,7 +185,7 @@ html {
   border: none;
   outline: none;
   color: var(--secondary);
-  font-size: 200px;
+  font-size: clamp(72px, 14vw, 200px);
   font-weight: 900;
   line-height: 1.1;
   padding: 40px;
@@ -141,20 +198,17 @@ html {
   /* ✅ 대문자 강제 제거 */
   text-transform: none;
 
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   cursor: text;
   position: relative;
   z-index: 2;
 }
 
-.typing-area:empty:before {
+.typing-area.is-empty::before {
   content: attr(data-placeholder);
   color: rgba(255, 255, 255, 0.2);
   position: absolute;
-}
-
-.typing-area:focus:before {
-  content: '';
+  pointer-events: none;
 }
 
 /* Scroll Indicator */
@@ -447,8 +501,49 @@ html {
   /* ✅ 모바일 앵커 보정(nav 더 작음) */
   html { scroll-padding-top: 80px; }
 
-  .nav { padding: 20px; }
-  .nav-menu { display: none; }
+  body.nav-open { overflow: hidden; }
+
+  .nav {
+    padding: 14px 20px;
+    mix-blend-mode: normal;
+    background: rgba(0, 64, 148, 0.92);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .nav-toggle { display: inline-flex; }
+
+  .nav-menu {
+    position: fixed;
+    top: var(--nav-mobile-height);
+    left: 0;
+    right: 0;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(0, 64, 148, 0.97);
+    transition: max-height 0.3s ease, opacity 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .nav.nav-open .nav-menu {
+    max-height: calc(100svh - var(--nav-mobile-height));
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav-menu a {
+    display: block;
+    width: 100%;
+    padding: 16px 20px;
+    font-size: 18px;
+    line-height: 1.2;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
 
   /* ✅ 모바일에서 로고가 커서 밀리는 것 방지 */
   .nav-logo {
@@ -463,6 +558,7 @@ html {
   .typing-area {
     padding: 20px;
     font-size: 48px;
+    letter-spacing: 0.06em;
   }
 
   /* ✅ Download 섹션 “밀려서 안 보임” 방지: 패딩/폰트/버튼 축소 + 줄바꿈 */
@@ -489,6 +585,18 @@ html {
   .concept-row { grid-template-columns: 1fr; }
   .concept-number { font-size: 48px; }
   .footer-content { flex-direction: column; gap: 40px; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Selection */
