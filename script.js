@@ -12,24 +12,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const getTypingPlainText = () =>
     (typingArea?.textContent || '').replace(/\u200B/g, '').replace(/\u00A0/g, ' ').trim();
-
-
+  
+  // Keep Hangul/Latin sizing consistent by disabling per-character reformatting.
+  const shouldFormatKorean = () => false;
+  
   /* 한글 70% 축소 처리 (안정화 버전) */
-
-  const KOREAN_REGEX = /([\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]+)/g;
+  
+  const KOREAN_CHAR_REGEX = /[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/;
   let isComposing = false;
 
   function formatKoreanText() {
-    if (!typingArea) return;
+    if (!typingArea || !shouldFormatKorean()) return;
 
     const plainText = typingArea.textContent || '';
-    const formattedHTML = plainText.replace(
-      KOREAN_REGEX,
-      '<span class="korean-char">$1</span>'
-    );
+    const formattedHTML = plainText
+      .split('')
+      .map((char) =>
+        KOREAN_CHAR_REGEX.test(char) ? `<span class="korean-char">${char}</span>` : char
+      )
+      .join('');
 
     typingArea.innerHTML = formattedHTML;
     placeCaretAtEnd(typingArea);
+  }
+
+  function scheduleKoreanFormat() {
+    if (!shouldFormatKorean() || !typingArea) return;
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        formatKoreanText();
+        syncTypingPlaceholderState();
+      });
+    }, 0);
   }
 
   function placeCaretAtEnd(el) {
@@ -44,17 +58,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
   typingArea?.addEventListener('compositionstart', () => {
     isComposing = true;
+    typingArea.classList.remove('is-empty');
   });
 
   typingArea?.addEventListener('compositionend', () => {
     isComposing = false;
-    formatKoreanText();
-    syncTypingPlaceholderState();
+    if (shouldFormatKorean()) {
+      scheduleKoreanFormat();
+    } else {
+      syncTypingPlaceholderState();
+    }
   });
 
-  typingArea?.addEventListener('input', function () {
-    if (isComposing) return;
-    formatKoreanText();
+  typingArea?.addEventListener('input', function (event) {
+    if (isComposing || event.isComposing) return;
+    if (shouldFormatKorean()) {
+      formatKoreanText();
+    }
     syncTypingPlaceholderState();
   });
 
