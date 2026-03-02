@@ -9,8 +9,46 @@ document.addEventListener('DOMContentLoaded', function () {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const isMobileViewport = () => window.matchMedia('(max-width: 768px)').matches;
+
   const getTypingPlainText = () =>
     (typingArea?.textContent || '').replace(/\u200B/g, '').replace(/\u00A0/g, ' ').trim();
+
+  /* 한글만 50% 축소 처리 */
+
+  const KOREAN_REGEX = /([\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]+)/g;
+
+  function formatKoreanTextPreserveCaret() {
+    if (!typingArea) return;
+
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const caretOffset = range.startOffset;
+
+    const plainText = typingArea.textContent || '';
+    const formattedHTML = plainText.replace(
+      KOREAN_REGEX,
+      '<span class="korean-char">$1</span>'
+    );
+
+    typingArea.innerHTML = formattedHTML;
+
+    // 커서 복구
+    placeCaretAtEnd(typingArea);
+  }
+
+  function placeCaretAtEnd(el) {
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  /* ============================= */
 
   function syncTypingPlaceholderState() {
     if (!typingArea) return;
@@ -31,18 +69,23 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   syncTypingPlaceholderState();
-  typingArea?.addEventListener('input', syncTypingPlaceholderState);
+
+  typingArea?.addEventListener('input', function () {
+    formatKoreanTextPreserveCaret();
+    syncTypingPlaceholderState();
+  });
+
   typingArea?.addEventListener('focus', syncTypingPlaceholderState);
   typingArea?.addEventListener('blur', syncTypingPlaceholderState);
 
-  // Mobile menu toggle
+  /* ===== 모바일 메뉴 ===== */
+
   navToggle?.addEventListener('click', function () {
     if (!isMobileViewport()) return;
     const isOpen = nav?.classList.contains('nav-open');
     setMobileMenuState(!isOpen);
   });
 
-  // Smooth scroll for navigation
   navLinks.forEach((anchor) => {
     anchor.addEventListener('click', function (e) {
       const href = this.getAttribute('href');
@@ -70,7 +113,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!isMobileViewport()) closeMobileMenu();
   });
 
-  // Pattern background image generation
+  /* ===== Pattern Background ===== */
+
   if (patternBg) {
     const patternCanvas = document.createElement('canvas');
     const patternCtx = patternCanvas.getContext('2d');
@@ -104,85 +148,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Intersection Observer for section reveal
-  const sections = document.querySelectorAll('.section');
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
-          observer.unobserve(entry.target);
-        });
-      },
-      { root: null, rootMargin: '0px', threshold: 0.1 }
-    );
+  /* ===== 붙여넣기 시 일반 텍스트 유지 ===== */
 
-    sections.forEach((section) => {
-      section.style.opacity = '0';
-      section.style.transform = 'translateY(50px)';
-      section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-      observer.observe(section);
-    });
-  } else {
-    sections.forEach((section) => {
-      section.style.opacity = '1';
-      section.style.transform = 'translateY(0)';
-    });
-  }
-
-  // Concept row hover only on pointer devices
-  if (window.matchMedia('(hover: hover)').matches) {
-    document.querySelectorAll('.concept-row').forEach((row) => {
-      row.addEventListener('mouseenter', function () {
-        this.style.transform = 'translateX(20px)';
-      });
-      row.addEventListener('mouseleave', function () {
-        this.style.transform = 'translateX(0)';
-      });
-    });
-  }
-
-  // Keyboard shortcuts
-  document.addEventListener('keydown', function (e) {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-      e.preventDefault();
-      if (typingArea) {
-        typingArea.textContent = '';
-        syncTypingPlaceholderState();
-      }
-    }
-
-    if (e.key === 'Escape') {
-      closeMobileMenu();
-      typingArea?.blur();
-    }
-  });
-
-  // Main section opacity on scroll
-  if (mainSection) {
-    let ticking = false;
-    window.addEventListener(
-      'scroll',
-      function () {
-        if (ticking) return;
-        window.requestAnimationFrame(function () {
-          const scrolled = window.pageYOffset;
-          const mainHeight = mainSection.offsetHeight;
-          if (mainHeight > 0) {
-            const progress = Math.min(scrolled / mainHeight, 1);
-            mainSection.style.opacity = String(1 - progress * 0.5);
-          }
-          ticking = false;
-        });
-        ticking = true;
-      },
-      { passive: true }
-    );
-  }
-
-  // Keep pasted content plain text in contenteditable
   typingArea?.addEventListener('paste', function (e) {
     e.preventDefault();
     const plainText =
@@ -190,50 +157,6 @@ document.addEventListener('DOMContentLoaded', function () {
       window.clipboardData?.getData('Text') ||
       '';
 
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) {
-      typingArea.textContent = `${typingArea.textContent || ''}${plainText}`;
-      syncTypingPlaceholderState();
-      return;
-    }
-
-    const range = selection.getRangeAt(0);
-    range.deleteContents();
-    const textNode = document.createTextNode(plainText);
-    range.insertNode(textNode);
-    range.setStartAfter(textNode);
-    range.collapse(true);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    syncTypingPlaceholderState();
+    document.execCommand('insertText', false, plainText);
   });
-
-  // Custom cursor for pointer devices
-  if (mainSection && window.matchMedia('(pointer: fine)').matches) {
-    const cursorEl = document.createElement('div');
-    cursorEl.className = 'custom-cursor';
-    cursorEl.style.cssText = `
-      position: fixed;
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(255,255,255,0.5);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0;
-      transform: translate(-50%, -50%);
-      transition: opacity 0.2s ease;
-    `;
-    document.body.appendChild(cursorEl);
-
-    mainSection.addEventListener('mousemove', function (e) {
-      cursorEl.style.opacity = '1';
-      cursorEl.style.left = `${e.clientX}px`;
-      cursorEl.style.top = `${e.clientY}px`;
-    });
-
-    mainSection.addEventListener('mouseleave', function () {
-      cursorEl.style.opacity = '0';
-    });
-  }
 });
