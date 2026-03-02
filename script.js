@@ -150,6 +150,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  /* ===== 드래그 중 I-빔 커서 방지 ===== */
+  document.addEventListener('mousedown', (e) => {
+    if (!e.target.closest('#typingArea')) {
+      document.body.classList.add('is-dragging');
+    }
+  });
+  document.addEventListener('mouseup', () => {
+    document.body.classList.remove('is-dragging');
+  });
+
   /* ===== 붙여넣기 일반 텍스트 유지 ===== */
 
   typingArea?.addEventListener('paste', function (e) {
