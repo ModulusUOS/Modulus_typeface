@@ -561,6 +561,10 @@ html {
     letter-spacing: 0.06em;
   }
 
+  .large-text {
+    font-size: 20px;
+  }
+
   /* ✅ Download 섹션 “밀려서 안 보임” 방지: 패딩/폰트/버튼 축소 + 줄바꿈 */
   .download-box {
     padding: 80px 20px;
@@ -599,6 +603,14 @@ html {
   }
 }
 
+/* I-빔 커서 방지: 비편집 요소는 기본 커서 유지 */
+body {
+  cursor: default;
+}
+body.is-dragging * {
+  cursor: default !important;
+}
+
 /* Selection */
 ::selection {
   background-color: var(--primary);
@@ -614,20 +626,4 @@ html {
   line-height: 1;
   display: inline-block;
   vertical-align: baseline;
-}
-
-/* 기본 PC용 글자 크기 */
-body {
-    font-size: 18px;
-}
-
-/* 모바일 화면 (너비 768px 이하)일 때 적용 */
-@media (max-width: 768px) {
-    body {
-        font-size: 10px; /* 모바일에 맞게 글자 크기를 줄임 */
-    }
-   
-    h1 {
-        font-size: 24px; /* 큰 제목도 적당히 조절 */
-    }
 }
