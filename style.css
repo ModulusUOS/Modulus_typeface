@@ -608,3 +608,10 @@ html {
   background-color: var(--primary);
   color: var(--secondary);
 }
+
+.korean-char {
+  font-size: 0.5em;       /* 영어 대비 50% */
+  line-height: 1;
+  display: inline-block;
+  vertical-align: baseline;
+}
