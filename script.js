@@ -12,50 +12,87 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const getTypingPlainText = () =>
     (typingArea?.textContent || '').replace(/\u200B/g, '').replace(/\u00A0/g, ' ').trim();
-  
-  // Keep Hangul/Latin sizing consistent by disabling per-character reformatting.
-  const shouldFormatKorean = () => false;
-  
-  /* 한글 70% 축소 처리 (안정화 버전) */
-  
+
+  /* 영문만 1.5배 확대(한글 기준 1em). */
   const KOREAN_CHAR_REGEX = /[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/;
-  let isComposing = false;
+  const LATIN_CHAR_REGEX = /[A-Za-zÀ-ÖØ-öø-ÿ]/;
 
-  function formatKoreanText() {
-    if (!typingArea || !shouldFormatKorean()) return;
+  /* 커서 위치를 텍스트 오프셋(문자 수)으로 저장 */
+  function getCaretOffset(el) {
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return 0;
+    const range = sel.getRangeAt(0);
+    const pre = document.createRange();
+    pre.selectNodeContents(el);
+    pre.setEnd(range.endContainer, range.endOffset);
+    return pre.toString().length;
+  }
 
+  /* 텍스트 오프셋으로 커서를 복원 */
+  function setCaretOffset(el, offset) {
+    const sel = window.getSelection();
+    const range = document.createRange();
+    let remaining = offset;
+    let found = false;
+
+    function traverse(node) {
+      if (found) return;
+      if (node.nodeType === Node.TEXT_NODE) {
+        if (remaining <= node.length) {
+          range.setStart(node, remaining);
+          range.setEnd(node, remaining);
+          found = true;
+        } else {
+          remaining -= node.length;
+        }
+      } else {
+        for (const child of node.childNodes) {
+          traverse(child);
+          if (found) return;
+        }
+      }
+    }
+
+    traverse(el);
+    if (!found) {
+      range.selectNodeContents(el);
+      range.collapse(false);
+    }
+    sel.removeAllRanges();
+    sel.addRange(range);
+    el.focus();
+  }
+
+  function formatMixedText() {
+    if (!typingArea) return;
+
+    const caretOffset = getCaretOffset(typingArea);
     const plainText = typingArea.textContent || '';
     const formattedHTML = plainText
       .split('')
-      .map((char) =>
-        KOREAN_CHAR_REGEX.test(char) ? `<span class="korean-char">${char}</span>` : char
-      )
+      .map((char) => {
+        if (KOREAN_CHAR_REGEX.test(char)) return `<span class=\"korean-char\">${char}</span>`;
+        if (LATIN_CHAR_REGEX.test(char)) return `<span class=\"latin-char\">${char}</span>`;
+        return char;
+      })
       .join('');
 
     typingArea.innerHTML = formattedHTML;
-    placeCaretAtEnd(typingArea);
+    setCaretOffset(typingArea, caretOffset);
   }
 
-  function scheduleKoreanFormat() {
-    if (!shouldFormatKorean() || !typingArea) return;
+  function scheduleMixedFormat() {
+    if (!typingArea) return;
     setTimeout(() => {
       requestAnimationFrame(() => {
-        formatKoreanText();
+        formatMixedText();
         syncTypingPlaceholderState();
       });
     }, 0);
   }
 
-  function placeCaretAtEnd(el) {
-    el.focus();
-    const range = document.createRange();
-    range.selectNodeContents(el);
-    range.collapse(false);
-    const sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
-
+  let isComposing = false;
+  
   typingArea?.addEventListener('compositionstart', () => {
     isComposing = true;
     typingArea.classList.remove('is-empty');
@@ -63,18 +100,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   typingArea?.addEventListener('compositionend', () => {
     isComposing = false;
-    if (shouldFormatKorean()) {
-      scheduleKoreanFormat();
-    } else {
-      syncTypingPlaceholderState();
-    }
+    scheduleMixedFormat();
   });
 
   typingArea?.addEventListener('input', function (event) {
     if (isComposing || event.isComposing) return;
-    if (shouldFormatKorean()) {
-      formatKoreanText();
-    }
+    formatMixedText();
     syncTypingPlaceholderState();
   });
 

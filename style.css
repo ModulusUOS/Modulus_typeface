@@ -32,6 +32,13 @@ body {
 /* Noto Sans Korean */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
 
+/* Normalize Hangul visual size against the custom Latin display font. */
+@font-face {
+  font-family: 'Noto Sans KR Adjusted';
+  src: local('Noto Sans KR');
+  size-adjust: 90%;
+}
+
 /* UOS Typeface */
 @font-face {
   font-family: 'UOS Typeface';
@@ -185,7 +192,7 @@ html {
   border: none;
   outline: none;
   color: var(--secondary);
-  font-size: clamp(72px, 14vw, 200px);
+  font-size: clamp(62px, 11.8vw, 171px); /* 웹 기본 사이즈 */
   font-weight: 900;
   line-height: 1.1;
   padding: 40px;
@@ -193,7 +200,7 @@ html {
   word-break: break-word;
   overflow-wrap: anywhere;
 
-  font-family: 'UOS Typeface', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'UOS Typeface', 'Noto Sans KR Adjusted', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* ✅ 대문자 강제 제거 */
   text-transform: none;
@@ -209,6 +216,7 @@ html {
   color: rgba(255, 255, 255, 0.2);
   position: absolute;
   pointer-events: none;
+  font-size: inherit;
 }
 
 /* Scroll Indicator */
@@ -557,7 +565,7 @@ html {
   /* 메인 타이핑은 모바일 전용 크기 */
   .typing-area {
     padding: 20px;
-    font-size: 48px;
+    font-size: 60px; /* 모바일 기본 사이즈 */
     letter-spacing: 0.06em;
   }
 
@@ -623,6 +631,13 @@ body.is-dragging * {
 
 .korean-char {
   font-size: 1em;
+  line-height: inherit;
+  display: inline;
+  vertical-align: baseline;
+}
+
+.latin-char {
+  font-size: 1.5em;
   line-height: inherit;
   display: inline;
   vertical-align: baseline;
