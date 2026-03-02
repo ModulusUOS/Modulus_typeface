@@ -622,8 +622,8 @@ body.is-dragging * {
 }
 
 .korean-char {
-  font-size: 0.7em;
-  line-height: 1;
-  display: inline-block;
+  font-size: 1em;
+  line-height: inherit;
+  display: inline;
   vertical-align: baseline;
 }
