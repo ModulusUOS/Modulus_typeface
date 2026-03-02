@@ -14,8 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
     (typingArea?.textContent || '').replace(/\u200B/g, '').replace(/\u00A0/g, ' ').trim();
 
   /* 영문만 1.5배 확대(한글 기준 1em). */
-  const KOREAN_CHAR_REGEX = /[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/;
   const LATIN_CHAR_REGEX = /[A-Za-zÀ-ÖØ-öø-ÿ]/;
+  let isComposing = false;
+  let pendingFormatFrame = null;
 
   /* 커서 위치를 텍스트 오프셋(문자 수)으로 저장 */
   function getCaretOffset(el) {
@@ -66,12 +67,17 @@ document.addEventListener('DOMContentLoaded', function () {
   function formatMixedText() {
     if (!typingArea) return;
 
-    const caretOffset = getCaretOffset(typingArea);
     const plainText = typingArea.textContent || '';
+
+    // 순수 한글/기타 텍스트일 때는 재포맷하지 않음 (IME 중복 이슈 회피)
+    if (!LATIN_CHAR_REGEX.test(plainText)) {
+      return;
+    }
+
+    const caretOffset = getCaretOffset(typingArea);
     const formattedHTML = plainText
       .split('')
       .map((char) => {
-        if (KOREAN_CHAR_REGEX.test(char)) return `<span class=\"korean-char\">${char}</span>`;
         if (LATIN_CHAR_REGEX.test(char)) return `<span class=\"latin-char\">${char}</span>`;
         return char;
       })
@@ -83,16 +89,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function scheduleMixedFormat() {
     if (!typingArea) return;
-    setTimeout(() => {
-      requestAnimationFrame(() => {
-        formatMixedText();
-        syncTypingPlaceholderState();
-      });
-    }, 0);
+    if (pendingFormatFrame !== null) {
+      cancelAnimationFrame(pendingFormatFrame);
+    }
+    pendingFormatFrame = requestAnimationFrame(() => {
+      pendingFormatFrame = null;
+      formatMixedText();
+      syncTypingPlaceholderState();
+    });
   }
 
-  let isComposing = false;
-  
   typingArea?.addEventListener('compositionstart', () => {
     isComposing = true;
     typingArea.classList.remove('is-empty');
@@ -105,8 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   typingArea?.addEventListener('input', function (event) {
     if (isComposing || event.isComposing) return;
-    formatMixedText();
-    syncTypingPlaceholderState();
+    scheduleMixedFormat();
   });
 
   /* ============================= */
