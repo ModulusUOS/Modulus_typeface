@@ -624,7 +624,7 @@ body {
 /* 모바일 화면 (너비 768px 이하)일 때 적용 */
 @media (max-width: 768px) {
     body {
-        font-size: 16px; /* 모바일에 맞게 글자 크기를 줄임 */
+        font-size: 10px; /* 모바일에 맞게 글자 크기를 줄임 */
     }
    
     h1 {
