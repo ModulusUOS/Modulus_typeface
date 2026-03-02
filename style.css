@@ -615,3 +615,19 @@ html {
   display: inline-block;
   vertical-align: baseline;
 }
+
+/* 기본 PC용 글자 크기 */
+body {
+    font-size: 18px;
+}
+
+/* 모바일 화면 (너비 768px 이하)일 때 적용 */
+@media (max-width: 768px) {
+    body {
+        font-size: 16px; /* 모바일에 맞게 글자 크기를 줄임 */
+    }
+   
+    h1 {
+        font-size: 24px; /* 큰 제목도 적당히 조절 */
+    }
+}
