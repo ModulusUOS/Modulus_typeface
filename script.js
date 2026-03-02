@@ -13,18 +13,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const getTypingPlainText = () =>
     (typingArea?.textContent || '').replace(/\u200B/g, '').replace(/\u00A0/g, ' ').trim();
 
-  /* 한글만 50% 축소 처리 */
+
+  /* 한글 70% 축소 처리 (안정화 버전) */
 
   const KOREAN_REGEX = /([\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]+)/g;
+  let isComposing = false;
 
-  function formatKoreanTextPreserveCaret() {
+  function formatKoreanText() {
     if (!typingArea) return;
-
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
-
-    const range = selection.getRangeAt(0);
-    const caretOffset = range.startOffset;
 
     const plainText = typingArea.textContent || '';
     const formattedHTML = plainText.replace(
@@ -33,8 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 
     typingArea.innerHTML = formattedHTML;
-
-    // 커서 복구
     placeCaretAtEnd(typingArea);
   }
 
@@ -47,6 +41,22 @@ document.addEventListener('DOMContentLoaded', function () {
     sel.removeAllRanges();
     sel.addRange(range);
   }
+
+  typingArea?.addEventListener('compositionstart', () => {
+    isComposing = true;
+  });
+
+  typingArea?.addEventListener('compositionend', () => {
+    isComposing = false;
+    formatKoreanText();
+    syncTypingPlaceholderState();
+  });
+
+  typingArea?.addEventListener('input', function () {
+    if (isComposing) return;
+    formatKoreanText();
+    syncTypingPlaceholderState();
+  });
 
   /* ============================= */
 
@@ -69,14 +79,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   syncTypingPlaceholderState();
-
-  typingArea?.addEventListener('input', function () {
-    formatKoreanTextPreserveCaret();
-    syncTypingPlaceholderState();
-  });
-
-  typingArea?.addEventListener('focus', syncTypingPlaceholderState);
-  typingArea?.addEventListener('blur', syncTypingPlaceholderState);
 
   /* ===== 모바일 메뉴 ===== */
 
@@ -148,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ===== 붙여넣기 시 일반 텍스트 유지 ===== */
+  /* ===== 붙여넣기 일반 텍스트 유지 ===== */
 
   typingArea?.addEventListener('paste', function (e) {
     e.preventDefault();
@@ -156,7 +158,6 @@ document.addEventListener('DOMContentLoaded', function () {
       e.clipboardData?.getData('text/plain') ||
       window.clipboardData?.getData('Text') ||
       '';
-
     document.execCommand('insertText', false, plainText);
   });
 });
